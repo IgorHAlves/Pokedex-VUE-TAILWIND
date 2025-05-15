@@ -8,7 +8,7 @@ let num = ref(0);
 </script>
 
 <template>
-  <div class="flex flex-col min-h-screen bg-gray-100">
+  <div class="flex flex-col min-h-screen bg-black">
     <Navbar />
 
     <div class="main container mx-auto px-4 py-6">

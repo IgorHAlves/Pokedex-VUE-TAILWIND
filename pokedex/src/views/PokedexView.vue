@@ -2,31 +2,7 @@
   <div>
     <h1 class="text-3xl font-bold text-center mb-6 mt-6">Pokemons</h1>
     <div class="grid grid-cols-2 mg:grid-cols-4 lg:grid-cols-4 gap-4">
-      <div class="rounded-lg p-4 text-white shadow-md bg-orange-500">
-        <img src="" alt="" class="mx-auto mb-2 h-20" />
-        <h2 class="text-center capitalize font-bold">Charizard</h2>
-        <p class="text-center text-sm uppercase"></p>
-      </div>
-      <div class="rounded-lg p-4 text-white shadow-md bg-green-500">
-        <img src="" alt="" class="mx-auto mb-2 h-20" />
-        <h2 class="text-center capitalize font-bold">Charizard</h2>
-        <p class="text-center text-sm uppercase"></p>
-      </div>
-      <div class="rounded-lg p-4 text-white shadow-md bg-yellow-500">
-        <img src="" alt="" class="mx-auto mb-2 h-20" />
-        <h2 class="text-center capitalize font-bold">Charizard</h2>
-        <p class="text-center text-sm uppercase"></p>
-      </div>
-      <div class="rounded-lg p-4 text-white shadow-md bg-blue-500">
-        <img src="" alt="" class="mx-auto mb-2 h-20" />
-        <h2 class="text-center capitalize font-bold">Charizard</h2>
-        <p class="text-center text-sm uppercase"></p>
-      </div>
-      <div class="rounded-lg p-4 text-white shadow-md bg-purple-500">
-        <img src="" alt="" class="mx-auto mb-2 h-20" />
-        <h2 class="text-center capitalize font-bold">Charizard</h2>
-        <p class="text-center text-sm uppercase"></p>
-      </div>
+      <PokemonCard v-for="p in pokemons" :key="p.name" :pokemon="p" />
     </div>
     <div class="flex justify-center gap-4 mt-6">
       <button class="btn">Anterior</button>
@@ -34,3 +10,38 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import axios from "axios";
+import PokemonCard from "../components/PokemonCardComponent.vue";
+const pokemons = ref([]);
+const offset = ref(0);
+const limit = 12;
+
+//cria função de busca inicial de pokemons
+const fetchPokemons = async () => {
+  const response = await axios.get(
+    `https://pokeapi.co/api/v2/pokemon?offset=0&limit=12`
+  );
+  const results = response.data.results;
+  console.log(results);
+
+  //buscar detalhes de cada pokemon
+  const detailed = await Promise.all(
+    results.map((p) => axios.get(p.url).then((response) => response.data))
+  );
+
+  console.log(detailed);
+
+  pokemons.value = detailed.map((pokemon) => ({
+    name: pokemon.name,
+    image: pokemon.sprites.other.dream_world.front_default,
+    type: pokemon.types[0].type.name,
+  }));
+
+  console.log(pokemons);
+};
+
+onMounted(fetchPokemons);
+</script>
